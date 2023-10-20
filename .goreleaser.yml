@@ -1,24 +1,31 @@
 project_name: filebrowser
-
 env:
   - GO111MODULE=on
 
+before:
+  hooks:
+  - make build-frontend
 builds:
-  env:
-    - CGO_ENABLED=0
-  ldflags:
-    - -s -w
-  main: main.go
-  binary: filebrowser
-  goos:
-    - linux
-    - windows
-  goarch:
-    - amd64
+  - env:
+      - CGO_ENABLED=0
+    flags:
+      - -trimpath
+    ldflags:
+      - -s -w -extldflags "-static"
+      - -X {{ .ModulePath }}/pkg/consts.Version={{ .Version }}
+      - -X {{ .ModulePath }}/pkg/consts.Commit={{ .ShortCommit }}
+      - -X {{ .ModulePath }}/pkg/consts.CommitDate={{ .CommitDate }}
+    mod_timestamp: "{{ .CommitTimestamp }}"
+    goos:
+      - linux
+      - windows
+    goarch:
+      - amd64
+      - arm64
+checksum:
+  name_template: "{{ .ProjectName }}_checksums.txt"
 archives:
-  -
-    name_template: "{{.Os}}-{{.Arch}}{{if .Arm}}v{{.Arm}}{{end}}-{{ .ProjectName }}"
-    format: tar.gz
+  - name_template: "{{ .ProjectName }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
     format_overrides:
       - goos: windows
         format: zip
