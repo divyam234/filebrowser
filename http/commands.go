@@ -23,10 +23,6 @@ var upgrader = websocket.Upgrader{
 	WriteBufferSize: 1024,
 }
 
-var (
-	cmdNotAllowed = []byte("Command not allowed.")
-)
-
 //nolint:unparam
 func wsErr(ws *websocket.Conn, r *http.Request, status int, err error) {
 	txt := http.StatusText(status)
@@ -65,14 +61,6 @@ var commandsHandler = withUser(func(w http.ResponseWriter, r *http.Request, d *d
 		if err := conn.WriteMessage(websocket.TextMessage, []byte(err.Error())); err != nil { //nolint:govet
 			wsErr(conn, r, http.StatusInternalServerError, err)
 		}
-		return 0, nil
-	}
-
-	if !d.server.EnableExec || !d.user.CanExecute(command[0]) {
-		if err := conn.WriteMessage(websocket.TextMessage, cmdNotAllowed); err != nil { //nolint:govet
-			wsErr(conn, r, http.StatusInternalServerError, err)
-		}
-
 		return 0, nil
 	}
 

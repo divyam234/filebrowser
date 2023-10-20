@@ -42,7 +42,7 @@ func addConfigFlags(flags *pflag.FlagSet) {
 	flags.String("recaptcha.secret", "", "ReCaptcha secret")
 
 	flags.String("branding.name", "", "replace 'File Browser' by this name")
-	flags.String("branding.color", "", "set the theme color")
+	flags.String("branding.color", "dark", "set the theme color")
 	flags.String("branding.files", "", "path to directory with images and custom styles")
 	flags.Bool("branding.disableExternal", false, "disable external links such as GitHub links")
 	flags.Bool("branding.disableUsedPercentage", false, "disable used disk percentage graph")
